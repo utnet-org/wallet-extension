@@ -479,27 +479,27 @@ function MainPage() {
           marginBottom: "8px",
           marginLeft: "2px"
         }}>
-        <img
-          src={RefreshImage}
-          alt=""
-          style={{
-            width: "20px",
-            height: "20px",
-            marginRight: "6px",
-            cursor: "pointer"
-          }}
-        />
-        <div
-          style={{
-            fontSize: "13px",
-            fontWeight: 400,
-            color: "#3EDFCF",
-            cursor: "pointer"
-          }}>
-          {intl.formatMessage({
-            id: "refresh_list"
-          })}
-        </div>
+        {/*<img*/}
+        {/*  src={RefreshImage}*/}
+        {/*  alt=""*/}
+        {/*  style={{*/}
+        {/*    width: "20px",*/}
+        {/*    height: "20px",*/}
+        {/*    marginRight: "6px",*/}
+        {/*    cursor: "pointer"*/}
+        {/*  }}*/}
+        {/*/>*/}
+        {/*<div*/}
+        {/*  style={{*/}
+        {/*    fontSize: "13px",*/}
+        {/*    fontWeight: 400,*/}
+        {/*    color: "#3EDFCF",*/}
+        {/*    cursor: "pointer"*/}
+        {/*  }}>*/}
+        {/*  {intl.formatMessage({*/}
+        {/*    id: "refresh_list"*/}
+        {/*  })}*/}
+        {/*</div>*/}
       </div>
       <div
         style={{
