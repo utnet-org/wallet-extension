@@ -48,9 +48,9 @@ function IndexWelcome() {
   const handleTermsClick = () => {
     chrome.tabs.update({ url: "tabs/terms_of_service.html" })
   }
-  const toPrivacyPolicy = () => {
+  const toCreateWallet = () => {
     if (isChecked) {
-      chrome.tabs.update({ url: "tabs/privacy_policy.html?from=create" })
+      chrome.tabs.update({ url: "tabs/ask_help_improve.html?from=create" })
     } else {
       setAlertType("error")
       setShowCustomAlert(true)
@@ -65,7 +65,7 @@ function IndexWelcome() {
   }
   const toImportWallet = () => {
     if (isChecked) {
-      chrome.tabs.update({ url: "tabs/privacy_policy.html?from=import" })
+      chrome.tabs.update({ url: "tabs/ask_help_improve.html?from=import" })
     } else {
       setAlertType("error")
       setShowCustomAlert(true)
@@ -144,7 +144,7 @@ function IndexWelcome() {
           }}
           onMouseOver={btn1MouseOver}
           onMouseOut={btn1MouseOut}
-          onClick={toPrivacyPolicy}>
+          onClick={toCreateWallet}>
           {intl.formatMessage({ id: "create_new_wallet" })}
         </div>
         <div
