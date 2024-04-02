@@ -328,6 +328,12 @@ input::-webkit-inner-spin-button {
   font-weight: 600;
 }
 
+.text_black_18_600 {
+  color: black;
+  font-size: 18px;
+  font-weight: 600;
+}
+
 .text_primary_36_400 {
   color: var(--primary-color);
   font-size: 36px;
