@@ -12,8 +12,7 @@ import {
   useNavigate
 } from "react-router-dom"
 
-import TopStorage from "~db/user_storage";
-
+import TopStorage from "~db/user_storage"
 import { createIntlObject } from "~i18n"
 
 function AdvancedPage() {
@@ -39,13 +38,13 @@ function AdvancedPage() {
   }
 
   const checkCurrentLanguage = async () => {
-      const userLanguage = await TopStorage.getCurrentLanguage()
-      setIntl(createIntlObject(userLanguage))
-    }
+    const userLanguage = await TopStorage.getCurrentLanguage()
+    setIntl(createIntlObject(userLanguage))
+  }
   useEffect(() => {
-      checkCurrentLanguage().catch((error) => {
-          console.error("An error occurred:", error)
-      })
+    checkCurrentLanguage().catch((error) => {
+      console.error("An error occurred:", error)
+    })
   }, [])
 
   return (
@@ -215,7 +214,9 @@ function AdvancedPage() {
               padding: "10px 24px",
               height: "41px"
             }}>
-            Save
+            {intl.formatMessage({
+              id: "save"
+            })}
           </Button>
         </div>
         <div>

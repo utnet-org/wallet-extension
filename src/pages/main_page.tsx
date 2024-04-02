@@ -78,7 +78,7 @@ function MainPage() {
   }
   // 获取钱包余额
   const getAmount = async () => {
-    console.log("account:",await account)
+    console.log("account:", await account)
     try {
       const response = await rpcFunctions.getAmount(await account)
       console.log(response)
@@ -258,6 +258,11 @@ function MainPage() {
           </div>
         </div>
         <div
+          onClick={() => {
+            const blankPageUrl = "https://uncscan.com/"
+            // 在新标签页中打开空白页面
+            window.open(blankPageUrl, "_blank")
+          }}
           className="flex_center_center_column"
           style={{ cursor: "pointer" }}>
           <img
@@ -521,6 +526,11 @@ function MainPage() {
           }}
         />
         <div
+          onClick={() => {
+            const blankPageUrl = "https://utlab.io/"
+            // 在新标签页中打开空白页面
+            window.open(blankPageUrl, "_blank")
+          }}
           style={{
             fontSize: "13px",
             fontWeight: 400,

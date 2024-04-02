@@ -178,6 +178,7 @@ function GetPower() {
           {defalutIndex == 0 &&
             progressList.map((item, index) => (
               <div
+                key={index}
                 style={{
                   width: "100%",
                   flex: 1,
