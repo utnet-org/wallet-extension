@@ -165,7 +165,13 @@
     "press_to_show_SRP": "Press to show SRP",
     "your_secret_recovery_phrase": "Your Secret Recovery Phrase",
     "copy_to_clipboard": "Copy to Clipboard",
-    "save": "Save"
+    "save": "Save",
+    "backup_your_data": "Backup your Data",
+    "backup_your_data_tip": "You can backup user settings containing preferences and account addresses into a JSON file.",
+    "restore_user_data": "Restore User Data",
+    "backup": "Backup",
+    "restore_user_data_tip": "You can restore user settings containing preferences and account addresses from a previously backed up JSON file.",
+    "restore": "Restore"
   },
   "zh-cn": {
     "current_language": "简体中文",
@@ -333,6 +339,12 @@
     "press_to_show_SRP": "按住以显示SRP",
     "your_secret_recovery_phrase": "您的个人账户私钥助记词",
     "copy_to_clipboard": "复制到剪贴板",
-    "save": "保存"
+    "save": "保存",
+    "backup_your_data": "备份您的数据",
+    "backup_your_data_tip": "您可以备份包含首选项和帐户的用户设置地址转换成 JSON 文件。",
+    "restore_user_data": "恢复用户数据",
+    "backup": "备份",
+    "restore_user_data_tip": "您可以恢复包含首选项和帐户的用户设置来自先前备份的 JSON 文件的地址。",
+    "restore": "恢复"
   }
 }

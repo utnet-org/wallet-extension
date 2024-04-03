@@ -12,6 +12,7 @@ import {
   useNavigate
 } from "react-router-dom"
 
+import DownloadButton from "~compoments/DownloadButton"
 import TopStorage from "~db/user_storage"
 import { createIntlObject } from "~i18n"
 
@@ -36,10 +37,17 @@ function AdvancedPage() {
     setIsChecked(!isChecked)
     console.log(`switch to ${checked}`)
   }
-
+  const [backupList, setBackupList] = useState([]) // 备份列表
   const checkCurrentLanguage = async () => {
     const userLanguage = await TopStorage.getCurrentLanguage()
     setIntl(createIntlObject(userLanguage))
+    setBackupList([
+      {
+        chainId: await TopStorage.getChainId(),
+        address: await TopStorage.getMyAddress(),
+        activityList: await TopStorage.getActivityList()
+      }
+    ])
   }
   useEffect(() => {
     checkCurrentLanguage().catch((error) => {
@@ -142,21 +150,13 @@ function AdvancedPage() {
               id: "state_logs_tip"
             })}
           </div>
-          <Button
-            type="primary"
-            style={{
-              backgroundColor: "transparent",
-              borderColor: "#3EDFCF",
-              color: "rgba(21.29, 27.63, 26.10, 0.90)",
-              margin: "10px 0 24px",
-              fontSize: 14,
-              padding: "10px 24px",
-              height: "41px"
-            }}>
-            {intl.formatMessage({
+          <DownloadButton
+            type="download"
+            data={backupList}
+            title={intl.formatMessage({
               id: "download_state_logs"
             })}
-          </Button>
+          />
         </div>
         <div
           style={{
@@ -220,44 +220,41 @@ function AdvancedPage() {
           </Button>
         </div>
         <div>
-          <div style={titleStyle}>Backup your Data</div>
-          <div style={subtitleStyle}>
-            You can backup user settings containing preferences and account
-            addresses into a JSON file.
+          <div style={titleStyle}>
+            {intl.formatMessage({
+              id: "backup_your_data"
+            })}
           </div>
-          <Button
-            type="primary"
-            style={{
-              backgroundColor: "transparent",
-              borderColor: "#3EDFCF",
-              color: "rgba(21.29, 27.63, 26.10, 0.90)",
-              margin: "10px 0 24px",
-              fontSize: 14,
-              padding: "10px 24px",
-              height: "41px"
-            }}>
-            Backup
-          </Button>
+          <div style={subtitleStyle}>
+            {intl.formatMessage({
+              id: "backup_your_data_tip"
+            })}
+          </div>
+          <DownloadButton
+            type="download"
+            data={backupList}
+            title={intl.formatMessage({
+              id: "backup"
+            })}
+          />
         </div>
         <div>
-          <div style={titleStyle}>Restore User Data</div>
-          <div style={subtitleStyle}>
-            You can restore user settings containing preferences and account
-            addresses from a previously backed up JSON file.
+          <div style={titleStyle}>
+            {intl.formatMessage({
+              id: "restore_user_data"
+            })}
           </div>
-          <Button
-            type="primary"
-            style={{
-              backgroundColor: "transparent",
-              borderColor: "#3EDFCF",
-              color: "rgba(21.29, 27.63, 26.10, 0.90)",
-              margin: "10px 0 24px",
-              fontSize: 14,
-              padding: "10px 24px",
-              height: "41px"
-            }}>
-            Restore
-          </Button>
+          <div style={subtitleStyle}>
+            {intl.formatMessage({
+              id: "restore_user_data_tip"
+            })}
+          </div>
+          <DownloadButton
+            type="restore"
+            title={intl.formatMessage({
+              id: "restore"
+            })}
+          />
         </div>
       </div>
     </div>
