@@ -179,6 +179,22 @@ const TopStorage = {
   //设置转账记录
   setActivityList: async (activityList) => {
     await storage.set("activity_list", activityList)
+  },
+  //获取锁定时间
+  getLockTime: async () => {
+    return await storage.get("lock_time")
+  },
+  //设置锁定时间
+  setLockTime: async (lockTime) => {
+    await storage.set("lock_time", lockTime)
+  },
+  //获取锁定时间的分钟数
+  getLockTimeMinute: async () => {
+    return await storage.get("lock_time_minute")
+  },
+  //设置锁定时间的分钟数
+  setLockTimeMinute: async (lockTimeMinute) => {
+    await storage.set("lock_time_minute", lockTimeMinute)
   }
 }
 export default TopStorage
