@@ -22,6 +22,7 @@ function AdvancedPage() {
     const userLanguage = navigator.language.toLowerCase()
     return createIntlObject(userLanguage)
   })
+  const [lockTime, setLockTimeValue] = useState("0")
   const navigate = useNavigate()
   const [isChecked, setIsChecked] = useState(false)
   const titleStyle = {
@@ -41,6 +42,17 @@ function AdvancedPage() {
   const checkCurrentLanguage = async () => {
     const userLanguage = await TopStorage.getCurrentLanguage()
     setIntl(createIntlObject(userLanguage))
+    const stroageLockTime = await TopStorage.getLockTimeMinute()
+    if (
+      stroageLockTime === undefined ||
+      stroageLockTime === null ||
+      stroageLockTime === "" ||
+      stroageLockTime === "0"
+    ) {
+      setLockTimeValue("0")
+    } else {
+      setLockTimeValue(stroageLockTime)
+    }
     setBackupList([
       {
         chainId: await TopStorage.getChainId(),
@@ -48,6 +60,17 @@ function AdvancedPage() {
         activityList: await TopStorage.getActivityList()
       }
     ])
+  }
+  const changeLockTime = async () => {
+    console.log("setLockTime", lockTime)
+    if (Number(lockTime) < 0) {
+      return
+    }
+    const nowTime = new Date().getTime()
+    const newLockTime = nowTime + Number(lockTime) * 60 * 1000
+    console.log("newLockTime", newLockTime)
+    await TopStorage.setLockTime(newLockTime)
+    await TopStorage.setLockTimeMinute(lockTime)
   }
   useEffect(() => {
     checkCurrentLanguage().catch((error) => {
@@ -177,6 +200,7 @@ function AdvancedPage() {
             </div>
           </div>
           <Switch
+            disabled={true}
             checked={isChecked}
             onChange={onChange}
             style={{
@@ -202,8 +226,11 @@ function AdvancedPage() {
             placeholder="0"
             variant="filled"
             style={{ height: "39px", marginTop: "10px" }}
+            value={lockTime}
+            onChange={(e) => setLockTimeValue(e.target.value)}
           />
           <Button
+            onClick={changeLockTime}
             type="primary"
             style={{
               backgroundColor: "transparent",

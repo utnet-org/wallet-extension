@@ -277,11 +277,12 @@ function MainPage() {
           </div>
         </div>
         <div
-          onClick={() => {
-            navigate("/tabs/home.html#getPower")
-          }}
+          // onClick={() => {
+          //   navigate("/tabs/home.html#getPower")
+          // }}
           className="flex_center_center_column"
-          style={{ cursor: "pointer" }}>
+          // style={{ cursor: "pointer" }}
+        >
           <img
             src={GetPowerImage}
             alt=""
