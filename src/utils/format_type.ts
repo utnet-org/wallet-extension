@@ -6,7 +6,7 @@ const FormatType = {
   },
   //格式化金额
   FormatAmount(amount: string): string {
-    return (Number(amount) / 10 ** 24).toFixed(4)
+    return (Math.floor((Number(amount) / 10 ** 24) * 10000) / 10000).toFixed(4)
   },
   //格式化手续费
   FormatGasPrice(gasPrice: string): string {

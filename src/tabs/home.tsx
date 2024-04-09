@@ -76,22 +76,59 @@ function Home() {
     }
     checkCurrentLanguage()
   }, [storage])
+  const PageSelector = () => {
+    const location = useLocation()
 
+    // 根据完整路径决定显示哪个组件
+    if (location.pathname === "/tabs/home.html") {
+      // 考虑哈希部分
+      switch (location.hash) {
+        case "#send":
+          return <SendPage />
+        case "#getPower":
+          return <GetPower />
+        case "#settings":
+          return <SettingPage />
+        case "#confirm":
+          return <ConfirmTransaction />
+        case "#general":
+          return <GeneralPage />
+        case "#advanced":
+          return <AdvancedPage />
+        case "#security_privacy":
+          return <SecurityPrivacyPage />
+        case "#about":
+          return <AboutPage />
+        case "#reveal_srp":
+          return <RevealSecretRecoveryPhrase />
+        case "#add_network":
+          return <AddCustomNetworkPage />
+        case "#lock_page":
+          return <LockPage />
+        // 添加其他哈希值对应的组件
+        default:
+          return <MainPage isLock={isLock} setIsLock={setIsLock} />
+      }
+    }
+
+    // 处理其他路径
+    return null
+  }
   document.title = "Home"
   return (
     <div className="home_page">
       <Router>
-        {!isLock && (
-          <HomeHeader
-            _handleAccountDetailsClick={handleAccountDetailsClick}
-            _handleCoonectedSitesClick={handlConnectedSitesClick}
-            _handleConnectToMobileWalletClick={handlConnectToMobileWalletClick}
-          />
-        )}
+        <HomeHeader
+          isLock={isLock} // Pass isLock and setIsLock to HomeHeader
+          setIsLock={setIsLock}
+          _handleAccountDetailsClick={handleAccountDetailsClick}
+          _handleCoonectedSitesClick={handlConnectedSitesClick}
+          _handleConnectToMobileWalletClick={handlConnectToMobileWalletClick}
+        />
         <Routes>
           <Route
             path="/popup.html"
-            element={!isLock ? <MainPage /> : <LockPage />}
+            element={<MainPage isLock={isLock} setIsLock={setIsLock} />}
           />
           <Route path="/tabs/*" element={<PageSelector />} />
         </Routes>
@@ -113,45 +150,6 @@ function Home() {
       )}
     </div>
   )
-}
-
-const PageSelector = () => {
-  const location = useLocation()
-
-  // 根据完整路径决定显示哪个组件
-  if (location.pathname === "/tabs/home.html") {
-    // 考虑哈希部分
-    switch (location.hash) {
-      case "#send":
-        return <SendPage />
-      case "#getPower":
-        return <GetPower />
-      case "#settings":
-        return <SettingPage />
-      case "#confirm":
-        return <ConfirmTransaction />
-      case "#general":
-        return <GeneralPage />
-      case "#advanced":
-        return <AdvancedPage />
-      case "#security_privacy":
-        return <SecurityPrivacyPage />
-      case "#about":
-        return <AboutPage />
-      case "#reveal_srp":
-        return <RevealSecretRecoveryPhrase />
-      case "#add_network":
-        return <AddCustomNetworkPage />
-      case "#lock_page":
-        return <LockPage />
-      // 添加其他哈希值对应的组件
-      default:
-        return <MainPage />
-    }
-  }
-
-  // 处理其他路径
-  return null
 }
 
 export default Home

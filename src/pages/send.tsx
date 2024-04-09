@@ -27,6 +27,7 @@ function SendPage() {
   const [amount, setAmount] = useState("0")
   const [inputAddress, setInputAddress] = useState("")
   const [walletBalance, setWalletBalance] = useState(0) // 钱包余额
+  const [maxSendAmount, setMaxSendAmount] = useState("0") // 最大发送金额
   const [gasPrice, setGasPrice] = useState("0") // gas价格
   const [alertType, setAlertType] = useState("") //提示的类型
   const [showCustomAlert, setShowCustomAlert] = useState(false) //是否显示提示
@@ -83,7 +84,7 @@ function SendPage() {
     if (Number(amount) <= 0 || amount === "") {
       return
     }
-    if (Number(amount) > walletBalance) {
+    if (Number(amount) > Number(maxSendAmount)) {
       setAlertType("error")
       setShowCustomAlert(true)
       setCustomAlertMessage(
@@ -126,8 +127,7 @@ function SendPage() {
     setStep(1)
     return true
   }
-  // 获取账户信息
-  const getAccount = async () => {
+  const getConnection = async () => {
     const signer = await rpcFunctions.setSigner(
       await TopStorage.getPrivateKey(),
       await TopStorage.getMyAddress(),
@@ -138,10 +138,12 @@ function SendPage() {
       await TopStorage.getRpcUrl(),
       signer
     )
-    const gasPrice = await rpcFunctions.getGasPrice(connection)
-    setGasPrice(FormatType.FormatGasPrice(gasPrice))
+    return connection
+  }
+  // 获取账户信息
+  const getAccount = async () => {
     const account = await rpcFunctions.setAccount(
-      connection,
+      await getConnection(),
       await TopStorage.getMyAddress()
     )
     console.log(account)
@@ -154,7 +156,10 @@ function SendPage() {
       const storageBalance = await TopStorage.getBalance()
       setWalletBalance(parseFloat(storageBalance))
       const response = await rpcFunctions.getAmount(await account)
-      console.log(response)
+      const gasPrice = await rpcFunctions.getGasPrice(await getConnection())
+      setGasPrice(FormatType.FormatGasPrice(gasPrice))
+      const maxBalance = Number(response) - Number(gasPrice)
+      setMaxSendAmount(FormatType.FormatAmount(maxBalance.toString()))
       const balance = FormatType.FormatAmount(response)
       setWalletBalance(parseFloat(balance))
     } catch (e) {
@@ -527,7 +532,7 @@ function SendPage() {
                   </div>
                   <div
                     onClick={() => {
-                      setAmount(walletBalance.toString())
+                      setAmount(maxSendAmount)
                     }}
                     style={{
                       padding: "6px",
