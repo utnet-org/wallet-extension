@@ -171,6 +171,31 @@ const MainPage: React.FC<MainPageProps> = ({ isLock, setIsLock }) => {
     })
     await getAmount()
   }
+  const [walletPassword, setWalletPassword] = useState("")
+  const closeLock = async () => {
+    const createPassword = await TopStorage.getCreatePassword()
+    if (walletPassword === "") {
+      return
+    }
+    if (createPassword !== walletPassword) {
+      setAlertType("error")
+      setShowCustomAlert(true)
+      setCustomAlertMessage(
+        intl.formatMessage({
+          id: "password_wrong"
+        })
+      )
+      setTimeout(() => {
+        // 这里是要执行的代码块
+        setShowCustomAlert(false)
+      }, 2000)
+      return
+    }
+    await TopStorage.setLockTime("")
+    setIsLock(false)
+    // setIsActive(true)
+    // TopStorage.setIsActive(true)
+  }
   useEffect(() => {
     checkCurrentLanguage().catch((error) => {
       console.error("An error occurred:", error)
@@ -595,6 +620,14 @@ const MainPage: React.FC<MainPageProps> = ({ isLock, setIsLock }) => {
             flexDirection: "column",
             justifyContent: "center"
           }}>
+          {/* 没有遮罩层的提示 */}
+          {showCustomAlert && (
+            <CustomAlert
+              message={customAlertMessage}
+              type={alertType}
+              onclick={() => {}}
+            />
+          )}
           <div className="home_page">
             <div
               style={{
@@ -639,7 +672,7 @@ const MainPage: React.FC<MainPageProps> = ({ isLock, setIsLock }) => {
                 }}>
                 Coming to Utility net
               </div>
-              <Input
+              <Input.Password
                 placeholder="Password"
                 style={{
                   width: "100%",
@@ -649,14 +682,13 @@ const MainPage: React.FC<MainPageProps> = ({ isLock, setIsLock }) => {
                   border: "none",
                   background: "#f4f7f7"
                 }}
+                value={walletPassword}
+                onChange={(e) => {
+                  setWalletPassword(e.target.value)
+                }}
               />
               <Button
-                onClick={async () => {
-                  await TopStorage.setLockTime("")
-                  setIsLock(false)
-                  // setIsActive(true)
-                  // TopStorage.setIsActive(true)
-                }}
+                onClick={closeLock}
                 type="primary"
                 style={{
                   backgroundColor: "transparent",

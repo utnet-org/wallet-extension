@@ -129,8 +129,12 @@ function ImportWallet() {
     }
   }
   const changeItemMonicPhrase = (e, index) => {
-    const newArray = [...mnemonicPhraseList]
-    newArray[index] = e.target.value
+    let newArray = [...mnemonicPhraseList]
+    if (e.target.value.split(" ").length === 12) {
+      newArray = e.target.value.split(" ")
+    } else {
+      newArray[index] = e.target.value
+    }
     // 更新状态
     setMnemonicPhraseList(newArray)
     if (
