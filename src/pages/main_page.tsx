@@ -702,7 +702,9 @@ const MainPage: React.FC<MainPageProps> = ({ isLock, setIsLock }) => {
                 Login
               </Button>
               <div
-                // onClick={changeLockTime}
+                onClick={() => {
+                  chrome.tabs.create({ url: "../tabs/forgot_password.html" })
+                }}
                 style={{
                   color: "#3EDFCF",
                   fontSize: "13px",
