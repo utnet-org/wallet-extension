@@ -132,24 +132,25 @@ function ForgotPasswordPage() {
     let newArray = [...mnemonicPhraseList]
     if (e.target.value.split(" ").length === 12) {
       newArray = e.target.value.split(" ")
+      setEffectiveMnemonicPhrase(true)
     } else {
       newArray[index] = e.target.value
+      if (
+        newArray.every((item) => {
+          return item !== ""
+        })
+      ) {
+        setEffectiveMnemonicPhrase(
+          newArray.every((item) => {
+            return MnemonicPhraseList.includes(item)
+          })
+        )
+      } else {
+        setEffectiveMnemonicPhrase(true)
+      }
     }
     // 更新状态
     setMnemonicPhraseList(newArray)
-    if (
-      newArray.every((item) => {
-        return item !== ""
-      })
-    ) {
-      setEffectiveMnemonicPhrase(
-        newArray.every((item) => {
-          return MnemonicPhraseList.includes(item)
-        })
-      )
-    } else {
-      setEffectiveMnemonicPhrase(true)
-    }
   }
   const lastStepToNext = () => {
     if (mnemonicPhraseList.includes("")) {
@@ -174,6 +175,34 @@ function ForgotPasswordPage() {
   const createNewWallet = async () => {
     setFirstPasswordOpenPage(false)
     setSecondPasswordOpenPage(false)
+    if (mnemonicPhraseList.includes("")) {
+      setAlertType("error")
+      setShowCustomAlert(true)
+      setCustomAlertMessage(
+        intl.formatMessage({
+          id: "please_fill_in_the_correct_mnemonic_phrase"
+        })
+      )
+      setTimeout(() => {
+        // 这里是要执行的代码块
+        setShowCustomAlert(false)
+      }, 2000)
+      return
+    }
+    if (!effectiveMnemonicPhrase) {
+      setAlertType("error")
+      setShowCustomAlert(true)
+      setCustomAlertMessage(
+        intl.formatMessage({
+          id: "private_key_mnemonic_is_invalid"
+        })
+      )
+      setTimeout(() => {
+        // 这里是要执行的代码块
+        setShowCustomAlert(false)
+      }, 2000)
+      return
+    }
     if (firstPassword != "" || secondPassword != "") {
       if (firstPassword != secondPassword) {
         setAlertType("error")
@@ -181,14 +210,6 @@ function ForgotPasswordPage() {
         setCustomAlertMessage(
           intl.formatMessage({
             id: "password_doesnt_match"
-          })
-        )
-      } else if (!isChecked) {
-        setAlertType("error")
-        setShowCustomAlert(true)
-        setCustomAlertMessage(
-          intl.formatMessage({
-            id: "please_read_and_check_the_agreement"
           })
         )
       } else {
@@ -212,7 +233,8 @@ function ForgotPasswordPage() {
         TopStorage.setMyAddress(implicitAccountId) // 保存地址
         TopStorage.setHasCreatedWallet("true") // 保存是否创建钱包
         // chrome.tabs.update({ url: "tabs/home.html" })
-        chrome.tabs.update({ url: "tabs/create_new_wallet_success.html" })
+        await TopStorage.setLockTime("")
+        chrome.tabs.update({ url: "tabs/create_new_wallet_success.html?from=reset" })
       }
       setTimeout(() => {
         // 这里是要执行的代码块
@@ -245,7 +267,7 @@ function ForgotPasswordPage() {
           onclick={() => {}}
         />
       )}
-      {/* 头部 */}
+      {/* 头部 */} 
       <WelcomeHeader />
       <div className="flex_center_center_column" style={{ width: "100%" }}>
         {/* 步骤条 */}
@@ -256,60 +278,19 @@ function ForgotPasswordPage() {
             alignItems: "center",
             justifyContent: "space-evenly",
             margin: "82px auto 97px"
+          }}></div>
+        <div
+          className="flex_center_center_column"
+          style={{
+            width: "100%"
           }}>
-          {stepText.map((item, index) => (
-            <div
-              key={index}
-              style={{
-                flex: 1,
-                borderTop: "1px rgba(21.29, 27.63, 26.10, 0.06) solid",
-                position: "relative"
-              }}>
-              <div
-                className="flex_center_center_column"
-                // onClick={() => setStepIndex(index)}
-                style={{
-                  width: "100%",
-                  position: "absolute",
-                  top: "-22px",
-                  left: 0,
-                  zIndex: 2,
-                  color: `${
-                    stepIndex == index
-                      ? "#3EDFCF"
-                      : "rgba(21.29, 27.63, 26.10, 0.90)"
-                  }`,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  fontFamily: "Inter",
-                  wordWrap: "break-word"
-                }}>
-                <div
-                  className="flex_center_center"
-                  style={{
-                    width: "44px",
-                    height: "44px",
-                    backgroundImage: `url(${
-                      stepIndex == index ? checkStepImage : defalutStepImage
-                    })`,
-                    backgroundSize: "cover",
-                    marginBottom: "18px"
-                  }}>
-                  {index + 1}
-                </div>
-                <div style={{ textAlign: "center" }}>{item}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-        {stepIndex == 1 ? (
-          // 第一步
           <div
             className="flex_center_center_column"
             style={{
               width: "40%",
+              // height: "427px",
               boxSizing: "border-box",
-              padding: "50px 86px",
+              padding: "55px 55px 28px",
               boxShadow:
                 "0px 1px 1px 1px rgba(223.26, 230.95, 230.02, 0.50) inset",
               borderRadius: 16,
@@ -319,28 +300,101 @@ function ForgotPasswordPage() {
             <div
               style={{
                 color: "rgba(21.29, 27.63, 26.10, 0.90)",
-                fontSize: 48,
+                fontSize: 40,
                 fontFamily: "Lantinghei SC",
                 fontWeight: 700,
                 wordWrap: "break-word",
                 textAlign: "center"
               }}>
               {intl.formatMessage({
-                id: "create_password"
+                id: "access_the_wallet_using_your_secret_recovery_phrase"
               })}
             </div>
             {/* 说明 */}
             <div
               style={{
-                margin: "12px 0 44px",
+                margin: "12px 0px 15px",
                 textAlign: "center",
                 fontSize: 14,
                 fontWeight: 400
               }}>
               {intl.formatMessage({
-                id: "create_password_title"
+                id: "access_the_wallet_using_your_secret_recovery_phrase_title"
               })}
             </div>
+            <div style={{ width: "100%" }}>
+              <div
+                style={{
+                  width: "100%",
+                  padding: "20px",
+                  marginBottom: "10px",
+                  borderRadius: 10,
+                  border: "1px rgba(205, 206, 206, 0.30) solid",
+                  display: "flex",
+                  flexWrap: "wrap",
+                  justifyContent: "space-evenly",
+                  alignItems: "center",
+                  // gridTemplateColumns: "repeat(5, 1fr)",
+                  // gridTemplateRows: "repeat(3, 1fr)",
+                  gridGap: "14px",
+                  boxSizing: "border-box"
+                }}>
+                {mnemonicPhraseList.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      width: "100px",
+                      height: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "end",
+                      fontSize: 14,
+                      fontWeight: 600,
+                      color: "rgba(21.29, 27.63, 26.10, 0.90)"
+                    }}>
+                    {index + 1}.
+                    <input
+                      type="text"
+                      value={item}
+                      onChange={(e) => {
+                        changeItemMonicPhrase(e, index)
+                      }}
+                      style={{
+                        maxWidth: "60px",
+                        padding: "6px 6px",
+                        // boxSizing: "border-box",
+                        width: "max-content",
+                        fontSize: 12,
+                        borderRadius: 6,
+                        textAlign: "center",
+                        // border: "1px solid #F0F0ED",
+                        border: "1px #ecece8 solid",
+                        marginLeft: "5px"
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            {!effectiveMnemonicPhrase && (
+              <div
+                style={{
+                  width: "100%",
+                  height: "40px",
+                  marginBottom: "10px",
+                  backgroundColor: "#fc3851",
+                  borderRadius: 5,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 14,
+                  color: "white"
+                }}>
+                {intl.formatMessage({
+                  id: "private_key_mnemonic_is_invalid"
+                })}
+              </div>
+            )}
             {/* 首次密码说明 */}
             <div
               style={{
@@ -349,7 +403,7 @@ function ForgotPasswordPage() {
                 alignItems: "center",
                 justifyContent: "space-between",
                 boxSizing: "border-box",
-                padding: "0 5%"
+                padding: "0 15%"
               }}>
               <div
                 style={{
@@ -381,7 +435,7 @@ function ForgotPasswordPage() {
             {/* 首次密码输入框 */}
             <div
               style={{
-                width: "90%",
+                width: "70%",
                 height: "37px",
                 margin: "6px 5% 0",
                 display: "flex",
@@ -451,7 +505,7 @@ function ForgotPasswordPage() {
             {firstPassword === "" && !firstPasswordOpenPage ? (
               <div
                 style={{
-                  width: "90%",
+                  width: "70%",
                   marginTop: "8px",
                   textAlign: "left",
                   color: "red"
@@ -471,7 +525,7 @@ function ForgotPasswordPage() {
                 alignItems: "center",
                 justifyContent: "space-between",
                 boxSizing: "border-box",
-                padding: "0 5%",
+                padding: "0 15%",
                 marginTop: "24px"
               }}>
               <div
@@ -499,7 +553,7 @@ function ForgotPasswordPage() {
             {/* 再次密码输入框 */}
             <div
               style={{
-                width: "90%",
+                width: "70%",
                 height: "37px",
                 margin: "6px 5% 0",
                 display: "flex",
@@ -545,7 +599,7 @@ function ForgotPasswordPage() {
             {secondPassword === "" && !secondPasswordOpenPage ? (
               <div
                 style={{
-                  width: "90%",
+                  width: "70%",
                   marginTop: "8px",
                   textAlign: "left",
                   color: "red"
@@ -558,209 +612,26 @@ function ForgotPasswordPage() {
               <div></div>
             )}
           </div>
-        ) : (
-          <div
-            className="flex_center_center_column"
-            style={{
-              width: "100%"
-            }}>
-            <div
-              className="flex_center_center_column"
-              style={{
-                width: "40%",
-                // height: "427px",
-                boxSizing: "border-box",
-                padding: "55px 55px 28px",
-                boxShadow:
-                  "0px 1px 1px 1px rgba(223.26, 230.95, 230.02, 0.50) inset",
-                borderRadius: 16,
-                backdropFilter: "blur(8px)"
-              }}>
-              {/* 标题 */}
-              <div
-                style={{
-                  color: "rgba(21.29, 27.63, 26.10, 0.90)",
-                  fontSize: 40,
-                  fontFamily: "Lantinghei SC",
-                  fontWeight: 700,
-                  wordWrap: "break-word",
-                  textAlign: "center"
-                }}>
-                {intl.formatMessage({
-                  id: "access_the_wallet_using_your_secret_recovery_phrase"
-                })}
-              </div>
-              {/* 说明 */}
-              <div
-                style={{
-                  margin: "12px 0px 15px",
-                  textAlign: "center",
-                  fontSize: 14,
-                  fontWeight: 400
-                }}>
-                {intl.formatMessage({
-                  id: "access_the_wallet_using_your_secret_recovery_phrase_title"
-                })}
-              </div>
-              <div style={{ width: "100%" }}>
-                <div
-                  style={{
-                    width: "100%",
-                    padding: "20px",
-                    marginBottom: "10px",
-                    borderRadius: 10,
-                    border: "1px rgba(205, 206, 206, 0.30) solid",
-                    display: "flex",
-                    flexWrap: "wrap",
-                    justifyContent: "space-evenly",
-                    alignItems: "center",
-                    // gridTemplateColumns: "repeat(5, 1fr)",
-                    // gridTemplateRows: "repeat(3, 1fr)",
-                    gridGap: "14px",
-                    boxSizing: "border-box"
-                  }}>
-                  {mnemonicPhraseList.map((item, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        width: "100px",
-                        height: "100%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "end",
-                        fontSize: 14,
-                        fontWeight: 600,
-                        color: "rgba(21.29, 27.63, 26.10, 0.90)"
-                      }}>
-                      {index + 1}.
-                      <input
-                        type="text"
-                        value={item}
-                        onChange={(e) => {
-                          changeItemMonicPhrase(e, index)
-                        }}
-                        style={{
-                          maxWidth: "60px",
-                          padding: "6px 6px",
-                          // boxSizing: "border-box",
-                          width: "max-content",
-                          fontSize: 12,
-                          borderRadius: 6,
-                          textAlign: "center",
-                          // border: "1px solid #F0F0ED",
-                          border: "1px #ecece8 solid",
-                          marginLeft: "5px"
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-              {!effectiveMnemonicPhrase && (
-                <div
-                  style={{
-                    width: "100%",
-                    height: "40px",
-                    backgroundColor: "#fc3851",
-                    borderRadius: 5,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 14,
-                    color: "white"
-                  }}>
-                  {intl.formatMessage({
-                    id: "private_key_mnemonic_is_invalid"
-                  })}
-                </div>
-              )}
-            </div>
-            <div
-              style={{
-                width: "40%",
-                padding: "9px 0",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}>
-              <div
-                onMouseOver={handleMouseOver}
-                onMouseOut={handleMouseOut}
-                onClick={lastStepToNext}
-                style={{
-                  padding: "12px 18px",
-                  borderRadius: 6,
-                  border: "1px #3EDFCF solid",
-                  textAlign: "center",
-                  color: "rgba(21.29, 27.63, 26.10, 0.90)",
-                  fontSize: 14,
-                  fontFamily: "Inter",
-                  fontWeight: "500",
-                  wordWrap: "break-word",
-                  cursor: "pointer"
-                }}>
-                {intl.formatMessage({
-                  id: "confirm_private_key_recovery_phrase"
-                })}
-              </div>
-            </div>
-          </div>
-        )}
-        {/* 协议 */}
-        {stepIndex == 1 ? (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginTop: "34px"
-            }}>
-            {isChecked && (
-              <img
-                src={checkIcon}
-                style={{ width: "18px", height: "18px" }}
-                onClick={handleCheckClick}
-              />
-            )}
-            {!isChecked && (
-              <img
-                src={uncheckIcon}
-                style={{ width: "18px", height: "18px" }}
-                onClick={handleCheckClick}
-              />
-            )}
-            <div style={{ fontSize: 14, marginLeft: "8px" }}>
-              {intl.formatMessage({
-                id: "create_password_protocol"
-              })}
-            </div>
-          </div>
-        ) : (
-          <div></div>
-        )}
+        </div>
         {/* 创建钱包按钮 */}
-        {stepIndex == 1 ? (
-          <div
-            onMouseOver={handleMouseOver}
-            onMouseOut={handleMouseOut}
-            onClick={createNewWallet}
-            style={{
-              fontSize: 14,
-              fontWeight: 500,
-              color: "rgba(21.29, 27.63, 26.10, 0.90)",
-              padding: "12px 18px",
-              marginTop: "30px",
-              borderRadius: 6,
-              cursor: "pointer",
-              border: "1px #3EDFCF solid"
-            }}>
-            {intl.formatMessage({
-              id: "create_new_wallet"
-            })}
-          </div>
-        ) : (
-          <div></div>
-        )}
+        <div
+          onMouseOver={handleMouseOver}
+          onMouseOut={handleMouseOut}
+          onClick={createNewWallet}
+          style={{
+            fontSize: 14,
+            fontWeight: 500,
+            color: "rgba(21.29, 27.63, 26.10, 0.90)",
+            padding: "12px 18px",
+            marginTop: "30px",
+            borderRadius: 6,
+            cursor: "pointer",
+            border: "1px #3EDFCF solid"
+          }}>
+          {intl.formatMessage({
+            id: "create_new_wallet"
+          })}
+        </div>
       </div>
     </div>
   )

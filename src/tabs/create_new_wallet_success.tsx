@@ -5,9 +5,9 @@ import React, { useEffect, useState } from "react"
 import { Storage } from "@plasmohq/storage"
 
 import WelcomeHeader from "~compoments/welcome_header"
+import TopStorage from "~db/user_storage"
 
 import { createIntlObject } from "../i18n"
-import TopStorage from "~db/user_storage";
 
 function CreateWalletSuccess() {
   const storage = new Storage({
@@ -20,7 +20,14 @@ function CreateWalletSuccess() {
     e.target.style.background = "white"
   }
   const toNext = () => {
-    chrome.tabs.update({ url: "tabs/guide_pages.html" })
+    // 获取URL中的参数值
+    const param1Value = getParameterByName("from", window.location.search)
+    console.log("param1Value:", param1Value)
+    if (param1Value === "reset") {
+      chrome.tabs.update({ url: "tabs/home.html" })
+    } else {
+      chrome.tabs.update({ url: "tabs/guide_pages.html" })
+    }
   }
   const [intl, setIntl] = useState(() => {
     // 初始化时根据浏览器语言创建 intl 对象
@@ -29,13 +36,22 @@ function CreateWalletSuccess() {
   })
 
   const checkCurrentLanguage = async () => {
-      const userLanguage = await TopStorage.getCurrentLanguage()
-      setIntl(createIntlObject(userLanguage))
+    const userLanguage = await TopStorage.getCurrentLanguage()
+    setIntl(createIntlObject(userLanguage))
+  }
+  // 解析URL参数的简单函数
+  function getParameterByName(name, url) {
+    name = name.replace(/[\[\]]/g, "\\$&")
+    const regex = new RegExp("[?]" + name + "(=([^&#]*)|&|#|$)"),
+      results = regex.exec(url)
+    if (!results) return null
+    if (!results[2]) return ""
+    return results[2]
   }
   useEffect(() => {
-      checkCurrentLanguage().catch((error) => {
-          console.error("An error occurred:", error)
-      })
+    checkCurrentLanguage().catch((error) => {
+      console.error("An error occurred:", error)
+    })
   }, [storage])
 
   document.title = "Complete1" //浏览器标题
@@ -75,9 +91,13 @@ function CreateWalletSuccess() {
               textAlign: "center",
               padding: "0 5%"
             }}>
-            {intl.formatMessage({
-              id: "creact_wallet_success"
-            })}
+            {getParameterByName("from", window.location.search) === "reset"
+              ? intl.formatMessage({
+                  id: "wallet_reset_successful"
+                })
+              : intl.formatMessage({
+                  id: "creact_wallet_success"
+                })}
           </div>
           <div
             style={{

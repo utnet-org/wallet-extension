@@ -4,12 +4,11 @@ import "./style.css"
 
 import React from "react"
 
-import TopStorage from "~db/user_storage";
+import TopStorage from "~db/user_storage"
 
 import Home from "./tabs/home"
 
 function IndexPopup() {
-
   useEffect(() => {
     const checkIsFirst = async () => {
       const isfirst = await TopStorage.hasCreatedWallet()
@@ -17,11 +16,22 @@ function IndexPopup() {
         // await storage.set("isfirst", "true")
       } else {
         // await storage.set("isfirst", "false")
-        await chrome.tabs.create({url: "tabs/welcome.html"})
+        await chrome.tabs.create({ url: "tabs/welcome.html" })
       }
     }
 
-    checkIsFirst()
+    checkIsFirst() // 添加beforeunload事件监听器
+    const handleBeforeUnload = () => {
+      // 发送消息给插件的主文件通知弹出窗口关闭
+      chrome.runtime.sendMessage({ type: "popupClosed" })
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload)
+
+    // return () => {
+    //   // 清理事件监听器
+    //   window.removeEventListener("beforeunload", handleBeforeUnload)
+    // }
   }, [])
 
   return (
