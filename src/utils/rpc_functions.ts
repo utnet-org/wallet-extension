@@ -21,7 +21,7 @@ interface RPCFunctions {
 
     getGasPrice(connection: utiApi.Connection): Promise<string>
 
-    sendMoney(account: utiApi.Account, toId: string, amount: BN): Promise<string>
+    sendMoney(account: utiApi.Account, toId: string, amount: BN): Promise<[string, number]>
 
     checkTxStatus(
         connection: utiApi.Connection,

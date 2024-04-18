@@ -141,7 +141,7 @@ export class Account {
         }
     }
 
-    protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction]> {
+    protected async signTransaction(receiverId: string, actions: Action[]): Promise<[Uint8Array, SignedTransaction, number]> {
         const accessKeyInfo = await this.findAccessKey(receiverId, actions);
         if (!accessKeyInfo) {
             throw new TypedError(`Can not sign transactions for account ${this.accountId} on network ${this.connection.networkId}, no matching key pair exists for this account`, 'KeyNotFound');
@@ -152,9 +152,10 @@ export class Account {
         const blockHash = block.header.hash;
 
         const nonce = ++accessKey.nonce;
-        return await signTransaction(
+        const [txHash, signedTransaction] = await signTransaction(
             receiverId, nonce, actions, baseDecode(blockHash), this.connection.signer, this.accountId, this.connection.networkId
         );
+        return [txHash, signedTransaction, nonce]
     }
 
     protected async signAndSendTransaction({
@@ -270,12 +271,11 @@ export class Account {
         return contractAccount;
     }
 
-    async sendMoney(receiverId: string, amount: BN): Promise<any> {
-        let txHash, signedTx;
-        [txHash, signedTx] = await this.signTransaction(receiverId, [transfer(amount)]);
+    async sendMoney(receiverId: string, amount: BN): Promise<[string, number]> {
+        const [txHash, signedTx, nonce] = await this.signTransaction(receiverId, [transfer(amount)]);
         console.log("txHash:", baseEncode(txHash))
         this.connection.provider.sendTransaction(signedTx);
-        return baseEncode(txHash)
+        return [baseEncode(txHash), nonce]
     }
 
     async createAccount(newAccountId: string, publicKey: string | PublicKey, amount: BN): Promise<FinalExecutionOutcome> {
