@@ -234,7 +234,10 @@ function ForgotPasswordPage() {
         TopStorage.setHasCreatedWallet("true") // 保存是否创建钱包
         // chrome.tabs.update({ url: "tabs/home.html" })
         await TopStorage.setLockTime("")
-        chrome.tabs.update({ url: "tabs/create_new_wallet_success.html?from=reset" })
+        await TopStorage.setLockStatus(false)
+        chrome.tabs.update({
+          url: "tabs/create_new_wallet_success.html?from=reset"
+        })
       }
       setTimeout(() => {
         // 这里是要执行的代码块
@@ -267,7 +270,7 @@ function ForgotPasswordPage() {
           onclick={() => {}}
         />
       )}
-      {/* 头部 */} 
+      {/* 头部 */}
       <WelcomeHeader />
       <div className="flex_center_center_column" style={{ width: "100%" }}>
         {/* 步骤条 */}

@@ -180,6 +180,14 @@ const TopStorage = {
   setActivityList: async (activityList) => {
     await storage.set("activity_list", activityList)
   },
+  //获取锁定状态
+  getLockStatus: async () => {
+    return await storage.get("lock_status")
+  },
+  //设置锁定状态
+  setLockStatus: async (status) => {
+    return await storage.set("lock_status", status)
+  },
   //获取锁定时间
   getLockTime: async () => {
     return await storage.get("lock_time")
@@ -195,6 +203,14 @@ const TopStorage = {
   //设置锁定时间的分钟数
   setLockTimeMinute: async (lockTimeMinute) => {
     await storage.set("lock_time_minute", lockTimeMinute)
+  },
+  //获取当前活跃的hash
+  getActiveHash: async () => {
+    return await storage.get("active_hash")
+  },
+  //设置当前活跃的hash
+  setActiveHash: async (hash) => {
+    await storage.set("active_hash", hash)
   }
 }
 export default TopStorage

@@ -66,10 +66,6 @@ function AdvancedPage() {
     if (Number(lockTime) < 0) {
       return
     }
-    const nowTime = new Date().getTime()
-    const newLockTime = nowTime + Number(lockTime) * 60 * 1000
-    console.log("newLockTime", newLockTime)
-    await TopStorage.setLockTime(newLockTime)
     await TopStorage.setLockTimeMinute(lockTime)
   }
   useEffect(() => {
