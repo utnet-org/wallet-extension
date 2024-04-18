@@ -70,8 +70,10 @@ function Home() {
         Number(stroageLockTime) > nowTime
       ) {
         setIsLock(false)
+        await TopStorage.setLockStatus(false)
       } else {
         setIsLock(true)
+        await TopStorage.setLockStatus(true)
       }
     }
     checkCurrentLanguage()

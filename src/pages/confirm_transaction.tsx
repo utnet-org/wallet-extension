@@ -12,13 +12,20 @@ import { useNavigate } from "react-router-dom"
 import { Storage } from "@plasmohq/storage"
 
 import TopStorage from "~db/user_storage"
+import { createIntlObject } from "~i18n"
 import FormatType from "~utils/format_type"
+import { CustomAlert } from "~utils/hint"
 import IdenticonAvatar from "~utils/identiconAvatar"
 import rpcFunctions from "~utils/rpc_functions"
 
 function ConfirmTransaction() {
   const storage = new Storage({
     area: "local"
+  })
+  const [intl, setIntl] = useState(() => {
+    // 初始化时根据浏览器语言创建 intl 对象
+    const userLanguage = navigator.language.toLowerCase()
+    return createIntlObject(userLanguage)
   })
   const navigate = useNavigate()
   const [confirmMask, setConfirmMask] = React.useState(false)
@@ -31,6 +38,9 @@ function ConfirmTransaction() {
   const [currentAddress, setCurrentAddress] = useState(
     "0x010101011010101001010101101010100101010110101010"
   )
+  const [alertType, setAlertType] = useState("") //提示的类型
+  const [showCustomAlert, setShowCustomAlert] = useState(false) //是否显示提示
+  const [customAlertMessage, setCustomAlertMessage] = useState("") //提示文字内容
 
   const confirmMouseOver = (e: any) => {
     e.target.style.background = "#3EDFCF"
@@ -73,8 +83,35 @@ function ConfirmTransaction() {
       accountId: await TopStorage.getMyAddress()
     })
   }
+  const copyTransactionId = async () => {
+    const activeHash = await TopStorage.getActiveHash()
+    console.log("activeHash", activeHash)
+    const input = document.createElement("input")
+    input.setAttribute("readonly", "readonly")
+    input.setAttribute("value", activeHash)
+    document.body.appendChild(input)
+    input.select()
+    input.setSelectionRange(0, 9999)
+    if (document.execCommand("copy")) {
+      document.execCommand("copy")
+      setAlertType("success")
+      setShowCustomAlert(true)
+      setCustomAlertMessage(
+        intl.formatMessage({
+          id: "copy_success"
+        })
+      )
+      setTimeout(() => {
+        // 这里是要执行的代码块
+        setShowCustomAlert(false)
+      }, 2000)
+    }
+    document.body.removeChild(input)
+  }
   useEffect(() => {
     const getDefalutData = async () => {
+      const userLanguage = await TopStorage.getCurrentLanguage()
+      setIntl(createIntlObject(userLanguage))
       setSendAddress(await storage.get("sendAddress"))
       setSendGasPrice(await storage.get("sendGasPrice"))
       setMyBalance(await storage.get("myBalance"))
@@ -99,6 +136,14 @@ function ConfirmTransaction() {
         alignItems: "center",
         marginTop: "10px"
       }}>
+      {/* 没有遮罩层的提示 */}
+      {showCustomAlert && (
+        <CustomAlert
+          message={customAlertMessage}
+          type={alertType}
+          onclick={() => {}}
+        />
+      )}
       {confirmMask && (
         <div
           style={{
@@ -162,12 +207,22 @@ function ConfirmTransaction() {
                   alt=""
                   style={{ width: "13px", height: "13px", marginRight: "4px" }}
                 />
-                <div style={{ color: "#1CDA8A", fontSize: "12px" }}>
-                  Verified
+                <div style={{ color: "#f79e13", fontSize: "12px" }}>
+                  WAITING
                 </div>
               </div>
             </div>
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div
+              onClick={() => {
+                const blankPageUrl = "https://uncscan.com/"
+                // 在新标签页中打开空白页面
+                window.open(blankPageUrl, "_blank")
+              }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                cursor: "pointer"
+              }}>
               <img
                 src={BrowserMiniImage}
                 alt=""
@@ -183,9 +238,11 @@ function ConfirmTransaction() {
               </div>
             </div>
             <div
+              onClick={copyTransactionId}
               style={{
                 display: "flex",
                 alignItems: "center",
+                cursor: "pointer",
                 margin: "10px 0 20px"
               }}>
               <img

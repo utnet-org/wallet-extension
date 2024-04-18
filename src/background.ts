@@ -87,24 +87,37 @@ chrome.runtime.onMessage.addListener(
           amount: message.sendAmount,
           status: "waiting"
         }
+        await TopStorage.setActiveHash(detailsHash)
         await TopStorage.addActivityList(detailsHash, newSendActivityItem)
       } else {
         return
       }
     }
-    if (message.type === "popupClosed") {
-      console.log("Received closePlugin message, closing plugin...")
-      // 在这里可以执行一些清理或保存操作
-      // 例如，关闭插件的页面或执行其他操作
-    }
   }
 )
-// chrome.windows.onRemoved.addListener(async (windowId) => {
-//   console.log("ssssssssdahfahgfashgdafhgadsfhgdf")
-//   await TopStorage.setLockTime("")
-//   await TopStorage.setLockTimeMinute(1000)
-//   setInterval(async () => {
-//     console.log(`Window ${windowId} closed`)
-//   }, 1000)
-//   // 这里可以执行一些插件关闭时的逻辑
-// })
+chrome.runtime.onConnect.addListener((port) => {
+  // 监听连接断开事件
+  port.onDisconnect.addListener(async () => {
+    // 调用方法，插件页面关闭时执行
+    console.log("插件页面已关闭")
+    const lockStatus = await TopStorage.getLockStatus()
+    const lockTimeMinute = await TopStorage.getLockTimeMinute()
+    console.log("lockTimeMinute", lockTimeMinute)
+    if (!!lockStatus) {
+      return
+    }
+    if (
+      lockTimeMinute === undefined ||
+      lockTimeMinute === null ||
+      lockTimeMinute === "" ||
+      lockTimeMinute === "0"
+    ) {
+      await TopStorage.setLockTime("")
+    } else {
+      const nowTime = new Date().getTime()
+      const newLockTime = nowTime + Number(lockTimeMinute) * 60 * 1000
+      console.log("newLockTime", new Date(newLockTime))
+      await TopStorage.setLockTime(newLockTime)
+    }
+  })
+})

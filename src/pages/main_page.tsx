@@ -192,6 +192,7 @@ const MainPage: React.FC<MainPageProps> = ({ isLock, setIsLock }) => {
       return
     }
     await TopStorage.setLockTime("")
+    await TopStorage.setLockStatus(false)
     setIsLock(false)
     // setIsActive(true)
     // TopStorage.setIsActive(true)

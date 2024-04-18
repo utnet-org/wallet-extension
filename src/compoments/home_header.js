@@ -66,6 +66,7 @@ const HomeHeader = ({
   const handleLockUtilityClick = async () => {
     await setIsLock(true)
     await TopStorage.setLockTime(new Date().getTime())
+    await TopStorage.setLockStatus(true)
     navigate("/tabs/home.html")
   }
 

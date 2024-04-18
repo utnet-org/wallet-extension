@@ -19,19 +19,7 @@ function IndexPopup() {
         await chrome.tabs.create({ url: "tabs/welcome.html" })
       }
     }
-
     checkIsFirst() // 添加beforeunload事件监听器
-    const handleBeforeUnload = () => {
-      // 发送消息给插件的主文件通知弹出窗口关闭
-      chrome.runtime.sendMessage({ type: "popupClosed" })
-    }
-
-    window.addEventListener("beforeunload", handleBeforeUnload)
-
-    // return () => {
-    //   // 清理事件监听器
-    //   window.removeEventListener("beforeunload", handleBeforeUnload)
-    // }
   }, [])
 
   return (
