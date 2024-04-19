@@ -125,8 +125,8 @@ const MainPage: React.FC<MainPageProps> = ({ isLock, setIsLock }) => {
     setIntl(createIntlObject(userLanguage))
     const array = Object.keys(await TopStorage.getActivityList())
     const object = Object.values(await TopStorage.getActivityList())
-    setActivityList(object)
-    setActivityListKeys(array)
+    setActivityList(object.reverse())
+    setActivityListKeys(array.reverse())
     const myAddress = await TopStorage.getMyAddress()
     setCurrentAddress(myAddress)
     if (myAddress !== undefined) {
@@ -138,6 +138,7 @@ const MainPage: React.FC<MainPageProps> = ({ isLock, setIsLock }) => {
     } else {
       setWalletBalance(parseFloat(await TopStorage.getBalance()))
     }
+    await getAmount()
     const getActivityList = async () => {
       const activityList = await TopStorage.getActivityList()
       if (typeof activityList !== "object" || activityList === null) {
@@ -156,20 +157,21 @@ const MainPage: React.FC<MainPageProps> = ({ isLock, setIsLock }) => {
       const keys = Object.keys(res)
       keys.forEach(async (item) => {
         if (res[item].status != "FINAL") {
-          chrome.runtime.sendMessage({
+          const _res = await chrome.runtime.sendMessage({
             type: "checkTxStatus",
             detailsHash: item,
             accountId: myAddress
           })
-        } else {
-          await getAmount()
-          console.log("activityList:", res)
-          console.log("item:", item)
-          console.log("status:", res[item].status)
+          if (_res.status == "FINAL") {
+            const array = Object.keys(await TopStorage.getActivityList())
+            const object = Object.values(await TopStorage.getActivityList())
+            setActivityList(object.reverse())
+            setActivityListKeys(array.reverse())
+            await getAmount()
+          }
         }
       })
     })
-    await getAmount()
   }
   const [walletPassword, setWalletPassword] = useState("")
   const closeLock = async () => {
@@ -206,8 +208,8 @@ const MainPage: React.FC<MainPageProps> = ({ isLock, setIsLock }) => {
     const changeActivityList = async () => {
       const array = Object.keys(await TopStorage.getActivityList())
       const object = Object.values(await TopStorage.getActivityList())
-      setActivityList(object)
-      setActivityListKeys(array)
+      setActivityList(object.reverse())
+      setActivityListKeys(array.reverse())
       const nowTime = new Date().getTime()
       const stroageLockTime = await TopStorage.getLockTime()
       // if (
@@ -487,7 +489,7 @@ const MainPage: React.FC<MainPageProps> = ({ isLock, setIsLock }) => {
                   height: "170px",
                   overflowY: "scroll"
                 }}>
-                {activityList.reverse().map((item, index) => (
+                {activityList.map((item, index) => (
                   <div
                     key={index}
                     style={{

@@ -203,14 +203,6 @@ const TopStorage = {
   //设置锁定时间的分钟数
   setLockTimeMinute: async (lockTimeMinute) => {
     await storage.set("lock_time_minute", lockTimeMinute)
-  },
-  //获取当前活跃的hash
-  getActiveHash: async () => {
-    return await storage.get("active_hash")
-  },
-  //设置当前活跃的hash
-  setActiveHash: async (hash) => {
-    await storage.set("active_hash", hash)
   }
 }
 export default TopStorage
