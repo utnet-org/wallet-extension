@@ -32,14 +32,16 @@ interface RPCFunctions {
     getAmount(account: utiApi.Account): Promise<string>
 
     getAccountDetails(account: utiApi.Account): Promise<any>
+
+    checkConnectionStatus(connection: utiApi.Connection): Promise<boolean>
 }
 
 const rpcFunctions: RPCFunctions = {
     // 设置签名者
     setSigner: async (
-        privateKey: string,
-        accountId: string,
-        networkId: string
+        privateKey,
+        accountId,
+        networkId
     ) => {
         const keyStore = new utiApi.keyStores.InMemoryKeyStore()
         const keyPair = utiApi.KeyPair.fromString(privateKey)
@@ -49,9 +51,9 @@ const rpcFunctions: RPCFunctions = {
     },
     // 创建rpc连接
     createConnection: async (
-        networkId: string,
-        url: string,
-        signer: utiApi.Signer
+        networkId,
+        url,
+        signer
     ) => {
         return utiApi.Connection.fromConfig({
             networkId: networkId,
@@ -67,19 +69,19 @@ const rpcFunctions: RPCFunctions = {
         return new utiApi.Account(connection, accountId)
     },
     // 获取gas
-    getGasPrice: async (connection: utiApi.Connection) => {
+    getGasPrice: async (connection) => {
         const res = await connection.provider.gasPrice(null)
         return res.gas_price
     },
     // 发送主币
-    sendMoney: async (account: utiApi.Account, toId: string, amount: BN) => {
+    sendMoney: async (account, toId, amount) => {
         return await account.sendMoney(toId, amount)
     },
     // 确认transaction状态
     checkTxStatus: async (
-        connection: utiApi.Connection,
-        transactionHash: string,
-        senderAccountId: string
+        connection,
+        transactionHash,
+        senderAccountId
     ) => {
         const res = await connection.provider
             .txStatus(transactionHash, senderAccountId)
@@ -90,14 +92,24 @@ const rpcFunctions: RPCFunctions = {
         return res
     },
     // 获取账户余额
-    getAmount: async (account: utiApi.Account) => {
+    getAmount: async (account) => {
         const res = await account.getAccountBalance()
         return res.total
     },
     // 获取账户详情
-    getAccountDetails: async (account: utiApi.Account) => {
+    getAccountDetails: async (account) => {
         const res = await account.getAccountDetails()
         return res
+    },
+    // 获取连接状态
+    checkConnectionStatus: async (connection) => {
+        try {
+            const res = await connection.provider.status()
+            return res.chain_id === connection.networkId;
+        } catch (e) {
+            return false
+        }
+
     }
 }
 
