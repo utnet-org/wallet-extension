@@ -15,6 +15,7 @@ import TopStorage from "~db/user_storage"
 import LockPage from "~tabs/lock_page"
 import IdenticonAvatar from "~utils/identiconAvatar"
 
+import ChainListPage from "./chain_list_page"
 import Dropdown from "./menu_dropdown"
 
 const HomeHeader = ({
@@ -115,7 +116,7 @@ const HomeHeader = ({
     <div>
       {!isLock && (
         <div className="home_header">
-          <div style={{ width: "24px", height: "24px" }}></div>
+          <ChainListPage />
           <div className="flex_center_center text_black_14_600">
             <IdenticonAvatar
               address={currentAddress}
