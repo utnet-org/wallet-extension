@@ -7,7 +7,9 @@ function ChainListPage() {
   return (
     <div>
       <div
-        onClick={() => {}}
+        onClick={() => {
+          setIsOpen(!isOpen)
+        }}
         className="flex_center_center"
         style={{
           padding: "0 10px",
@@ -41,6 +43,32 @@ function ChainListPage() {
           }}
         />
       </div>
+      {isOpen && (
+        <div
+          className="menu-dropdown-menu-chain-list"
+          onClick={() => {
+            setIsOpen(false)
+          }}>
+          <div
+            onClick={(e) => {
+              console.log(e)
+            }}
+            style={{
+              width: "calc(100% - 30px)",
+              height: "calc(100% - 30px)",
+              boxSizing: "border-box",
+              padding: "15px",
+              backgroundColor: "white",
+              position: "absolute",
+              top: "15px",
+              left: "15px",
+              borderRadius: "10px",
+              zIndex: 99999
+            }}>
+            选择网络
+          </div>
+        </div>
+      )}
     </div>
   )
 }
